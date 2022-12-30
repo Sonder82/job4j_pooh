@@ -42,9 +42,9 @@ class ReqTest {
     void whenTopicModePostMethod() {
         String ls = System.lineSeparator();
         String content = "POST /topic/weather HTTP/1.1" + ls
-                +"Host: localhost:9000" + ls
-                +"User-Agent: curl/7.72.0" + ls
-                +"Accept: */*" + ls
+                + "Host: localhost:9000" + ls
+                + "User-Agent: curl/7.72.0" + ls
+                + "Accept: */*" + ls
                 + "Content-Length: 14" + ls
                 + "Content-Type: application/x-www-form-urlencoded" + ls
                 + "" + ls
