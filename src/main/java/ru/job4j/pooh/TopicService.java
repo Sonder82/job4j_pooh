@@ -12,22 +12,33 @@ public class TopicService implements Service {
 
     @Override
     public Resp process(Req req) {
-        Resp result = null;
+        Resp result = new Resp("", "204");
         String name = req.getSourceName();
         if (GET.equals(req.getHttpRequestType())) {
             topics.putIfAbsent(name, new ConcurrentHashMap<>());
-            topics.get(req.getSourceName()).putIfAbsent(req.getParam(), new ConcurrentLinkedQueue<>());
-            result = new Resp(
-                    topics.get(name).getOrDefault(req.getParam(), new ConcurrentLinkedQueue<>()).poll(), "200");
+            if (!checkGet(req)) {
+                result = new Resp(
+                        topics.get(name)
+                                .getOrDefault(req.getParam(), new ConcurrentLinkedQueue<>()).poll(), "200");
+            }
         }
         if (POST.equals(req.getHttpRequestType())) {
-            ConcurrentHashMap<String, ConcurrentLinkedQueue<String>> map = topics.get(name);
-            for (String key : map.keySet()) {
-                map.get(key).add(req.getParam());
+            if (!checkPost(req)) {
+                for (String key : topics.get(name).keySet()) {
+                    topics.get(name).get(key).add(req.getParam());
+                }
+                result = new Resp(req.getParam(), "200");
             }
-            result = new Resp(req.getParam(), "200");
         }
         return result;
+    }
+
+    private boolean checkPost(Req req) {
+       return topics.get(req.getSourceName()) == null;
+    }
+
+    private boolean checkGet(Req req) {
+        return topics.get(req.getSourceName()).putIfAbsent(req.getParam(), new ConcurrentLinkedQueue<>()) == null;
     }
 }
 

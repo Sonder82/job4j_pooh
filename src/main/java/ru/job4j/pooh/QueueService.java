@@ -11,11 +11,12 @@ public class QueueService implements Service {
 
     @Override
     public Resp process(Req req) {
-        Resp resp = null;
+        Resp resp = new Resp("", "204");
         String name = req.getSourceName();
         if (POST.equals(req.getHttpRequestType())) {
             queue.putIfAbsent(name, new ConcurrentLinkedQueue<>());
             queue.get(name).add(req.getParam());
+            resp = new Resp(req.getParam(), "200");
         }
         if (GET.equals(req.getHttpRequestType())) {
             String text = queue.getOrDefault(name, new ConcurrentLinkedQueue<>()).poll();

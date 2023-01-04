@@ -31,7 +31,7 @@ class TopicServiceTest {
                 new Req("GET", "topic", "weather", paramForPublisher2)
         );
         assertThat(result1.text()).isEqualTo("temperature=18");
-        assertThat(result2.text()).isNull();
+        assertThat(result2.text()).isEqualTo("");
 
     }
 }
