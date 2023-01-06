@@ -16,25 +16,23 @@ public class TopicService implements Service {
         String name = req.getSourceName();
         if (GET.equals(req.getHttpRequestType())) {
             topics.putIfAbsent(name, new ConcurrentHashMap<>());
-            if (!checkGet(req)) {
-                result = new Resp(
-                        topics.get(name)
-                                .getOrDefault(req.getParam(), new ConcurrentLinkedQueue<>()).poll(), "200");
-            }
+            result = (!checkGet(req)) ? new Resp(topics.get(name)
+                    .getOrDefault(req.getParam(), new ConcurrentLinkedQueue<>()).poll(), "200")
+                    : new Resp("", "200");
         }
         if (POST.equals(req.getHttpRequestType())) {
             if (!checkPost(req)) {
                 for (String key : topics.get(name).keySet()) {
                     topics.get(name).get(key).add(req.getParam());
                 }
-                result = new Resp(req.getParam(), "200");
+                result = new Resp(req.getParam(), "204");
             }
         }
         return result;
     }
 
     private boolean checkPost(Req req) {
-       return topics.get(req.getSourceName()) == null;
+        return topics.get(req.getSourceName()) == null;
     }
 
     private boolean checkGet(Req req) {
